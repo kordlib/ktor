@@ -3,12 +3,17 @@ description = ""
 val jetty_alpn_boot_version: String? by extra
 
 kotlin.sourceSets {
-    jvmAndNixMain {
+    commonMain {
         dependencies {
             api(project(":ktor-server:ktor-server-core"))
             api(project(":ktor-client:ktor-client-core"))
-            api(project(":ktor-client:ktor-client-cio"))
             api(project(":ktor-test-dispatcher"))
+        }
+    }
+
+    jvmAndPosixMain {
+        dependencies {
+            api(project(":ktor-client:ktor-client-cio"))
         }
     }
 
@@ -37,13 +42,8 @@ kotlin.sourceSets {
     jvmTest {
         dependencies {
             api(project(":ktor-server:ktor-server-core", configuration = "testOutput"))
-            api(kotlin("test"))
-        }
-    }
-
-    jvmAndNixTest {
-        dependencies {
             api(project(":ktor-server:ktor-server-config-yaml"))
+            api(kotlin("test"))
         }
     }
 }

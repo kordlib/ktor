@@ -1,15 +1,14 @@
 /*
-* Copyright 2014-2021 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
-*/
+ * Copyright 2014-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
 pluginManagement {
     val build_snapshot_train: String? by settings
     repositories {
-        maven("https://plugins.gradle.org/m2")
-        if (build_snapshot_train?.toBoolean() == true) {
+        mavenCentral()
+        gradlePluginPortal()
+        if (build_snapshot_train.toBoolean()) {
             mavenLocal()
         }
-
-        maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev")
     }
 }
 
@@ -20,3 +19,5 @@ dependencyResolutionManagement {
         }
     }
 }
+
+rootProject.name = "buildSrc"

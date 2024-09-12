@@ -32,25 +32,26 @@ for other platforms, the corresponding tests for these should also be run. To se
 `./gradlew tasks`
 
 For Ktor to build correctly, a series of additional libraries/tools need to be installed, based on the operating
-system you're using for development:
+system you use for development:
 
 **Linux**
 
 Run the following commands to install `libcurl` and `libncurses`:
 
-```
-        sudo apt-get update
-        sudo apt-get install libncurses5 libncursesw5 libtinfo5
-        sudo apt-get install libcurl4-openssl-dev
+```bash
+sudo apt-get update
+sudo apt-get install libncurses5 libncursesw5 libtinfo5
+sudo apt-get install libcurl4-openssl-dev
 ```
 
 **macOS** 
 
-The easiest way to install `libcurl` and 'libncurses` on macOS is to use [Homebrew](https://brew.sh). Run the following commands:
+The easiest way to install `libcurl` and `libncurses` on macOS is to use [Homebrew](https://brew.sh).
+Run the following commands:
 
-```
-    brew install curl
-    brew install ncurses
+```bash
+brew install curl
+brew install ncurses
 ```
 
 If targeting macOS and/or iOS, install `Xcode` and `Xcode command line tools` on macOS.
@@ -58,7 +59,7 @@ If targeting macOS and/or iOS, install `Xcode` and `Xcode command line tools` on
 **Windows**
 
 For development on Windows, it is recommended to use [Cygwin](http://cygwin.com/) which will provide the necessary
-libaries such as `libncurses`.
+libraries such as `libncurses`.
 
 #### Referencing artifacts locally
 
@@ -68,7 +69,7 @@ used for debugging purposes. One of these is to publish to [Maven Local](https:/
 by adding the following line to your `settings.gradle(.kts)` file:
 
 ```groovy
-    includeBuild("/PATH/TO/KTOR")
+includeBuild("/PATH/TO/KTOR")
 ```
 
 #### Importing into IntelliJ IDEA
@@ -76,16 +77,6 @@ by adding the following line to your `settings.gradle(.kts)` file:
 To import into IntelliJ IDEA, just open up the `Ktor` project folder. IntelliJ IDEA should automatically detect
 that it is a Gradle project and import it. It's important that you make sure that all building and test operations
 are delegated to Gradle under [Gradle Settings](https://www.jetbrains.com/help/idea/gradle-settings.html).
-
-
-##### Working with Js and Native in IntelliJ IDEA
-
-The import, syntax highlight, and build for Js and Native source sets are disabled by default in IntelliJ IDEA.
-If you want to work on multiplatform code in IDE, you should disable the `jvmAndCommonOnly` flag in the `gradle.properties` file:
-```
-ktor.ide.jvmAndCommonOnly=false
-```
-Please note that disabling this flag increases the time it takes to import and index the project.
 
 ### Pull Requests
 

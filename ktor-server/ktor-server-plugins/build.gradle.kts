@@ -9,7 +9,7 @@ subprojects {
             }
             commonTest {
                 dependencies {
-                    api(project(":ktor-server:ktor-server-test-base"))
+                    api(project(":ktor-server:ktor-server-test-host"))
                 }
             }
 
@@ -17,7 +17,7 @@ subprojects {
                 dependencies {
                     api(project(":ktor-server:ktor-server-core", configuration = "testOutput"))
 
-                    api("ch.qos.logback:logback-classic:${Versions.logback}")
+                    api("ch.qos.logback:logback-classic:${project.Versions.logback}")
                 }
             }
         }
