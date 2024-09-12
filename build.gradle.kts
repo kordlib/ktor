@@ -99,11 +99,6 @@ plugins {
     id("org.jetbrains.dokka") version "1.9.10" apply false
     id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.13.2"
     id("kotlinx-atomicfu") version "0.22.0" apply false
-    id("com.osacky.doctor") version "0.9.1"
-}
-
-doctor {
-    enableTestCaching = false
 }
 
 allprojects {
