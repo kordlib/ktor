@@ -4,6 +4,7 @@
 
 package io.ktor.client.engine.curl.internal
 
+import io.ktor.client.engine.curl.*
 import io.ktor.client.plugins.*
 import io.ktor.utils.io.*
 import io.ktor.utils.io.core.*
@@ -11,7 +12,6 @@ import io.ktor.utils.io.locks.*
 import kotlinx.atomicfu.*
 import kotlinx.cinterop.*
 import kotlinx.coroutines.*
-import kotlinx.io.*
 import libcurl.*
 
 private class RequestHolder @OptIn(ExperimentalForeignApi::class) constructor(
@@ -40,8 +40,9 @@ internal class CurlMultiApiHandler : Closeable {
     private val cancelledHandles = mutableSetOf<Pair<EasyHandle, Throwable>>()
 
     @OptIn(ExperimentalForeignApi::class)
+    @Suppress("DEPRECATION")
     private val multiHandle: MultiHandle = curl_multi_init()
-        ?: throw RuntimeException("Could not initialize curl multi handle")
+        ?: throw CurlRuntimeException("Could not initialize curl multi handle")
 
     private val easyHandlesToUnpauseLock = SynchronizedObject()
 
@@ -62,7 +63,8 @@ internal class CurlMultiApiHandler : Closeable {
     @OptIn(ExperimentalForeignApi::class)
     fun scheduleRequest(request: CurlRequestData, deferred: CompletableDeferred<CurlSuccess>): EasyHandle {
         val easyHandle = curl_easy_init()
-            ?: error("Could not initialize an easy handle")
+            ?: throw @Suppress("DEPRECATION")
+            CurlIllegalStateException("Could not initialize an easy handle")
 
         val bodyStartedReceiving = CompletableDeferred<Unit>()
         val responseBody = if (request.isUpgradeRequest) {
@@ -222,8 +224,9 @@ internal class CurlMultiApiHandler : Closeable {
                 val messagePtr = curl_multi_info_read(multiHandle, messagesLeft.ptr)
                 val message = messagePtr?.pointed ?: continue
 
+                @Suppress("DEPRECATION")
                 val easyHandle = message.easy_handle
-                    ?: error("Got a null easy handle from the message")
+                    ?: throw CurlIllegalStateException("Got a null easy handle from the message")
 
                 try {
                     val result = processCompletedEasyHandle(message.msg, easyHandle, message.data.result)
@@ -243,6 +246,7 @@ internal class CurlMultiApiHandler : Closeable {
         }
     }
 
+    @Suppress("DEPRECATION")
     @OptIn(ExperimentalForeignApi::class)
     private fun processCancelledEasyHandle(easyHandle: EasyHandle, cause: Throwable): CurlFail = memScoped {
         try {
@@ -260,6 +264,7 @@ internal class CurlMultiApiHandler : Closeable {
         }
     }
 
+    @Suppress("DEPRECATION")
     @OptIn(ExperimentalForeignApi::class)
     private fun processCompletedEasyHandle(
         message: CURLMSG?,
@@ -299,7 +304,8 @@ internal class CurlMultiApiHandler : Closeable {
 
         if (message != CURLMSG.CURLMSG_DONE) {
             return CurlFail(
-                IllegalStateException("Request $request failed: $message")
+                @Suppress("DEPRECATION")
+                CurlIllegalStateException("Request $request failed: $message")
             )
         }
 
@@ -315,17 +321,20 @@ internal class CurlMultiApiHandler : Closeable {
 
         if (result == CURLE_PEER_FAILED_VERIFICATION) {
             return CurlFail(
-                IllegalStateException(
+                @Suppress("DEPRECATION")
+                CurlIllegalStateException(
                     "TLS verification failed for request: $request. Reason: $errorMessage"
                 )
             )
         }
 
         return CurlFail(
-            IllegalStateException("Connection failed for request: $request. Reason: $errorMessage")
+            @Suppress("DEPRECATION")
+            CurlIllegalStateException("Connection failed for request: $request. Reason: $errorMessage")
         )
     }
 
+    @Suppress("DEPRECATION")
     @OptIn(ExperimentalForeignApi::class)
     private fun collectSuccessResponse(easyHandle: EasyHandle): CurlSuccess? = memScoped {
         val responseDataRef = alloc<COpaquePointerVar>()
@@ -344,7 +353,7 @@ internal class CurlMultiApiHandler : Closeable {
 
         val responseBuilder = responseDataRef.value!!.fromCPointer<CurlResponseBuilder>()
         with(responseBuilder) {
-            val headers = headersBytes.build().readByteArray()
+            val headers = headersBytes.build().readBytes()
 
             CurlSuccess(
                 httpStatusCode.value.toInt(),

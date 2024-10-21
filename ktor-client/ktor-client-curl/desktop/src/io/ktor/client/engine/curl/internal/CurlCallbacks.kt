@@ -8,7 +8,6 @@ import io.ktor.utils.io.*
 import io.ktor.utils.io.core.*
 import kotlinx.cinterop.*
 import kotlinx.coroutines.*
-import kotlinx.io.Buffer
 import libcurl.*
 import platform.posix.*
 import kotlin.coroutines.*
