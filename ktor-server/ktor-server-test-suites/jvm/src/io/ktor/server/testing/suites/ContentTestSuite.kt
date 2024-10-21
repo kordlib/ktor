@@ -4,6 +4,7 @@
 
 package io.ktor.server.testing.suites
 
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -89,7 +90,7 @@ abstract class ContentTestSuite<TEngine : ApplicationEngine, TConfiguration : Ap
         withUrl("/") {
             assertEquals(200, status.value)
             assertEquals(ContentType.Application.OctetStream, contentType())
-            assertTrue(byteArrayOf(25, 37, 42).contentEquals(readBytes()))
+            assertTrue(byteArrayOf(25, 37, 42).contentEquals(readRawBytes()))
         }
     }
 
@@ -108,7 +109,7 @@ abstract class ContentTestSuite<TEngine : ApplicationEngine, TConfiguration : Ap
         withUrl("/") {
             assertEquals(200, status.value)
             assertEquals(ContentType.Application.OctetStream, contentType())
-            assertTrue(byteArrayOf(25, 37, 42).contentEquals(readBytes()))
+            assertTrue(byteArrayOf(25, 37, 42).contentEquals(readRawBytes()))
         }
     }
 
@@ -184,7 +185,7 @@ abstract class ContentTestSuite<TEngine : ApplicationEngine, TConfiguration : Ap
 
         withUrl("/") {
             assertEquals(200, status.value)
-            readBytes().let { bytes ->
+            readRawBytes().let { bytes ->
                 assertNotEquals(0, bytes.size)
 
                 // class file signature
@@ -213,7 +214,7 @@ abstract class ContentTestSuite<TEngine : ApplicationEngine, TConfiguration : Ap
 
         withUrl("/") {
             assertEquals(200, status.value)
-            readBytes().let { bytes ->
+            readRawBytes().let { bytes ->
                 assertNotEquals(0, bytes.size)
 
                 // class file signature
@@ -242,7 +243,7 @@ abstract class ContentTestSuite<TEngine : ApplicationEngine, TConfiguration : Ap
 
         withUrl("/") {
             assertEquals(200, status.value)
-            readBytes().let { bytes ->
+            readRawBytes().let { bytes ->
                 assertNotEquals(0, bytes.size)
 
                 // class file signature
@@ -349,40 +350,40 @@ abstract class ContentTestSuite<TEngine : ApplicationEngine, TConfiguration : Ap
         withUrl("/array") {
             assertEquals(size, headers[HttpHeaders.ContentLength]?.toLong())
             assertNotEquals("chunked", headers[HttpHeaders.TransferEncoding])
-            assertEquals(data.toList(), call.response.readBytes().toList())
+            assertContentEquals(data, call.response.readRawBytes())
         }
 
         withUrl("/array-chunked") {
             assertEquals("chunked", headers[HttpHeaders.TransferEncoding])
             assertEquals(1, headers.getAll(HttpHeaders.TransferEncoding)!!.size)
-            assertEquals(data.toList(), call.response.readBytes().toList())
+            assertContentEquals(data, call.response.readRawBytes())
             assertNull(headers[HttpHeaders.ContentLength])
         }
 
         withUrl("/chunked") {
             assertEquals("chunked", headers[HttpHeaders.TransferEncoding])
             assertEquals(1, headers.getAll(HttpHeaders.TransferEncoding)!!.size)
-            assertEquals(data.toList(), call.response.readBytes().toList())
+            assertContentEquals(data, call.response.readRawBytes())
             assertNull(headers[HttpHeaders.ContentLength])
         }
 
         withUrl("/fixed-read-channel") {
             assertNotEquals("chunked", headers[HttpHeaders.TransferEncoding])
             assertEquals(size, headers[HttpHeaders.ContentLength]?.toLong())
-            assertEquals(data.toList(), call.response.readBytes().toList())
+            assertContentEquals(data, call.response.readRawBytes())
         }
 
         withUrl("/pseudo-chunked") {
             assertNotEquals("chunked", headers[HttpHeaders.TransferEncoding])
             assertEquals(size, headers[HttpHeaders.ContentLength]?.toLong())
-            assertEquals(data.toList(), call.response.readBytes().toList())
+            assertContentEquals(data, call.response.readRawBytes())
         }
 
         withUrl("/read-channel") {
             assertNull(headers[HttpHeaders.ContentLength])
             assertEquals("chunked", headers[HttpHeaders.TransferEncoding])
             assertEquals(1, headers.getAll(HttpHeaders.TransferEncoding)!!.size)
-            assertEquals(data.toList(), call.response.readBytes().toList())
+            assertContentEquals(data, call.response.readRawBytes())
         }
     }
 
@@ -573,12 +574,7 @@ abstract class ContentTestSuite<TEngine : ApplicationEngine, TConfiguration : Ap
         createAndStartServer {
             post("/") {
                 val response = StringBuilder()
-                val parts = mutableListOf<PartData>()
-                call.receiveMultipart().forEachPart {
-                    parts.add(it)
-                }
-
-                parts.sortedBy { it.name }.forEach { part ->
+                call.receiveMultipart().forEachPart { part ->
                     when (part) {
                         is PartData.FormItem -> response.append("${part.name}=${part.value}\n")
                         is PartData.FileItem ->
@@ -591,8 +587,6 @@ abstract class ContentTestSuite<TEngine : ApplicationEngine, TConfiguration : Ap
                         is PartData.BinaryItem -> {}
                         is PartData.BinaryChannelItem -> {}
                     }
-
-                    part.dispose()
                 }
 
                 call.respondText(response.toString())
@@ -772,6 +766,7 @@ abstract class ContentTestSuite<TEngine : ApplicationEngine, TConfiguration : Ap
             {
                 method = HttpMethod.Post
                 headers.append("Content-Length", (Int.MAX_VALUE.toLong() + 1).toString())
+                setBody(ByteArray(1))
             }
         ) {
             assertEquals(200, status.value)
@@ -789,6 +784,37 @@ abstract class ContentTestSuite<TEngine : ApplicationEngine, TConfiguration : Ap
 
         withUrl("/?auto") {
             assertEquals("", bodyAsText())
+        }
+    }
+
+    @Test
+    fun outputStreamIsStreamedToConsumer() = runTest {
+        var readingStarted = false
+
+        createAndStartServer {
+            handle {
+                call.respondOutputStream {
+                    var count = 0
+                    while (!readingStarted) {
+                        write(++count)
+                        assertFalse(count > 10_000_000)
+                    }
+                }
+            }
+        }
+
+        withUrl("/") {
+            assertEquals(200, status.value)
+            assertEquals(ContentType.Application.OctetStream, contentType())
+
+            val input: InputStream = body()
+            var count = 0
+            var byte = 0
+            do {
+                assertEquals((count++).toByte(), byte.toByte())
+                byte = input.read()
+                readingStarted = true
+            } while (byte >= 0)
         }
     }
 

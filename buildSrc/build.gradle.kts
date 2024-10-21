@@ -6,7 +6,7 @@ plugins {
     `kotlin-dsl`
     // Serialization version should be aligned with the Kotlin version embedded in Gradle
     // https://docs.gradle.org/current/userguide/compatibility.html#kotlin
-    kotlin("plugin.serialization") version "1.9.24"
+    kotlin("plugin.serialization") version embeddedKotlinVersion
 }
 
 val buildSnapshotTrain = properties["build_snapshot_train"]?.toString().toBoolean()
@@ -20,7 +20,7 @@ repositories {
     }
 }
 
-val ktor_version = "3.0.0-eap-852"
+val ktor_version = "3.0.0-rc-2-eap-1091"
 
 dependencies {
     val kotlin_version = libs.versions.kotlin.get()
@@ -40,6 +40,7 @@ dependencies {
     implementation("io.ktor:ktor-server-conditional-headers:$ktor_version")
     implementation("io.ktor:ktor-server-compression:$ktor_version")
     implementation("io.ktor:ktor-server-content-negotiation:$ktor_version")
+    implementation("io.ktor:ktor-server-status-pages:$ktor_version")
     implementation("io.ktor:ktor-serialization-kotlinx:$ktor_version")
     implementation("io.ktor:ktor-network-tls-certificates:$ktor_version")
     implementation("io.ktor:ktor-utils:$ktor_version")
@@ -47,6 +48,11 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.logback.classic)
     implementation(libs.tomlj)
+    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:${libs.versions.atomicfu.get()}")
+
+    // A hack to make version catalogs accessible from buildSrc sources
+    // https://github.com/gradle/gradle/issues/15383#issuecomment-779893192
+    implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 }
 
 kotlin {

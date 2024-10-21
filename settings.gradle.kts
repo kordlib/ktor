@@ -1,8 +1,11 @@
 /*
- * Copyright 2014-2020 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2014-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
+@file:Suppress("UnstableApiUsage")
 
 pluginManagement {
+    includeBuild("gradle-settings-conventions")
+
     repositories {
         mavenCentral()
         google()
@@ -10,32 +13,20 @@ pluginManagement {
     }
 }
 
-rootProject.name = "ktor"
+plugins {
+    id("conventions-develocity")
+}
 
-val CACHE_USER = System.getenv("GRADLE_CACHE_USER")
-
-if (CACHE_USER != null) {
-    val CACHE_PASSWORD = System.getenv("GRADLE_CACHE_PASSWORD")
-    buildCache {
-        remote(HttpBuildCache::class) {
-            isPush = true
-            setUrl("https://ktor-gradle-cache.teamcity.com/cache/")
-            credentials {
-                username = CACHE_USER
-                password = CACHE_PASSWORD
-            }
-        }
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven")
+        maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlinx/dev")
+        mavenLocal()
     }
 }
 
-val fullVersion = System.getProperty("java.version", "8.0.0")
-val versionComponents = fullVersion
-    .split(".")
-    .take(2)
-    .filter { it.isNotBlank() }
-    .map { Integer.parseInt(it) }
-
-val currentJdk = if (versionComponents[0] == 1) versionComponents[1] else versionComponents[0]
+rootProject.name = "ktor"
 
 include(":ktor-server")
 include(":ktor-server:ktor-server-core")
@@ -63,7 +54,7 @@ include(":ktor-client:ktor-client-ios")
 include(":ktor-client:ktor-client-darwin")
 include(":ktor-client:ktor-client-darwin-legacy")
 include(":ktor-client:ktor-client-winhttp")
-if (currentJdk >= 11) {
+if (JavaVersion.current() >= JavaVersion.VERSION_11) {
     include(":ktor-client:ktor-client-java")
     include(":ktor-client:ktor-client-jetty-jakarta")
     include(":ktor-server:ktor-server-servlet-jakarta")

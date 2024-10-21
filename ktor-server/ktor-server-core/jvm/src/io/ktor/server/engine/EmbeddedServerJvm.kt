@@ -179,7 +179,7 @@ actual constructor(
         ).mapNotNullTo(HashSet()) { it.protectionDomain.codeSource.location }
 
         val watchUrls = allUrls.filter { url ->
-            url !in coreUrls && watchPatterns.any { pattern -> url.toString().contains(pattern) } &&
+            url !in coreUrls && watchPatterns.any { pattern -> checkUrlMatches(url, pattern) } &&
                 !(url.path ?: "").startsWith(jre)
         }
 
@@ -264,6 +264,8 @@ actual constructor(
     }
 
     public actual fun start(wait: Boolean): EmbeddedServer<TEngine, TConfiguration> {
+        addShutdownHook { stop() }
+
         applicationInstanceLock.write {
             val (application, classLoader) = try {
                 createApplication()
@@ -385,4 +387,10 @@ actual constructor(
         } catch (_: NoClassDefFoundError) {
         }
     }
+}
+
+internal fun checkUrlMatches(url: URL, pattern: String): Boolean {
+    val urlPath = url.path?.replace(File.separatorChar, '/') ?: return false
+    val normalizedPattern = pattern.replace(File.separatorChar, '/')
+    return urlPath.contains(normalizedPattern, ignoreCase = true)
 }

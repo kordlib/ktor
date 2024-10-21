@@ -1,7 +1,8 @@
 /*
- * Copyright 2014-2021 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2014-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import internal.*
 import org.gradle.api.*
 import org.gradle.api.tasks.testing.*
 import org.gradle.jvm.tasks.*
@@ -15,49 +16,34 @@ fun Project.configureJvm() {
         else -> 8
     }
 
-    val configuredVersion: String by rootProject.extra
-
     kotlin {
         jvm()
 
-        sourceSets.apply {
-            val jvmMain by getting {
+        sourceSets {
+            jvmMain {
                 dependencies {
-                    if (jdk > 6) {
-                        api("org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}")
-                    }
-                    if (jdk > 7) {
-                        api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}")
-                        api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${Versions.coroutines}") {
-                            exclude(module = "kotlin-stdlib")
-                            exclude(module = "kotlin-stdlib-jvm")
-                            exclude(module = "kotlin-stdlib-jdk8")
-                            exclude(module = "kotlin-stdlib-jdk7")
-                        }
-                    }
-
-                    api("org.slf4j:slf4j-api:${Versions.slf4j}")
+                    api(libs.slf4j.api)
                 }
             }
 
-            val jvmTest by getting {
+            jvmTest {
                 dependencies {
-                    implementation(kotlin("test-junit5"))
-                    implementation("org.junit.jupiter:junit-jupiter:${Versions.junit}")
-                    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:${Versions.coroutines}")
+                    implementation(libs.kotlin.test.junit5)
+                    implementation(libs.junit)
+                    implementation(libs.kotlinx.coroutines.debug)
                 }
             }
         }
     }
 
     tasks.register<Jar>("jarTest") {
-        dependsOn(tasks.getByName("jvmTestClasses"))
-        archiveClassifier.set("test")
-        from(kotlin.targets.getByName("jvm").compilations.getByName("test").output)
+        dependsOn(tasks.named("jvmTestClasses"))
+        archiveClassifier = "test"
+        from(kotlin.jvm().compilations.named("test").map { it.output })
     }
 
-    configurations.apply {
-        val testCompile = findByName("testCompile") ?: return@apply
+    configurations {
+        val testCompile = findByName("testCompile") ?: return@configurations
 
         val testOutput by creating {
             extendsFrom(testCompile)
@@ -66,19 +52,17 @@ fun Project.configureJvm() {
         }
     }
 
-    val jvmTest: KotlinJvmTest = tasks.getByName<KotlinJvmTest>("jvmTest") {
-        ignoreFailures = true
+    val jvmTest = tasks.named<KotlinJvmTest>("jvmTest") {
         maxHeapSize = "2g"
         exclude("**/*StressTest*")
         useJUnitPlatform()
         configureJavaLauncher(jdk)
     }
 
-    tasks.create<Test>("stressTest") {
-        classpath = files(jvmTest.classpath)
-        testClassesDirs = files(jvmTest.testClassesDirs)
+    tasks.register<Test>("stressTest") {
+        classpath = files(jvmTest.get().classpath)
+        testClassesDirs = files(jvmTest.get().testClassesDirs)
 
-        ignoreFailures = true
         maxHeapSize = "2g"
         jvmArgs("-XX:+HeapDumpOnOutOfMemoryError")
         setForkEvery(1)
@@ -88,7 +72,8 @@ fun Project.configureJvm() {
         configureJavaLauncher(jdk)
     }
 
-    tasks.getByName<Jar>("jvmJar").apply {
+    val configuredVersion: String by rootProject.extra
+    tasks.named<Jar>("jvmJar") {
         manifest {
             attributes(
                 "Implementation-Title" to name,

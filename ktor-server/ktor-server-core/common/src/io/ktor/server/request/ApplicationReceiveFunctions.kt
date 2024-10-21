@@ -1,6 +1,6 @@
 /*
-* Copyright 2014-2021 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
-*/
+ * Copyright 2014-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
 
 package io.ktor.server.request
 
@@ -20,7 +20,7 @@ import kotlin.reflect.*
 private val FORM_FIELD_LIMIT = AttributeKey<Long>("FormFieldLimit")
 
 @PublishedApi
-internal const val DEFAULT_FORM_FIELD_MAX_SIZE: Long = 64 * 1024
+internal const val DEFAULT_FORM_FIELD_MAX_SIZE: Long = 50 * 1024 * 1024
 
 /**
  * A pipeline for processing incoming content.
@@ -87,7 +87,7 @@ public suspend inline fun <reified T> ApplicationCall.receiveNullable(): T? = re
  */
 public suspend fun <T : Any> ApplicationCall.receive(type: KClass<T>): T {
     val kotlinType = starProjectedTypeBridge(type)
-    return receiveNullable(TypeInfo(type, kotlinType.platformType, kotlinType))!!
+    return receiveNullable(TypeInfo(type, kotlinType))!!
 }
 
 /**

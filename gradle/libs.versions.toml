@@ -2,14 +2,14 @@
 kotlin = "2.0.20"
 kotlinx-html = "0.11.0"
 kotlinx-datetime = "0.6.1"
-kotlinx-io = "0.5.3"
-coroutines = "1.8.1"
+kotlinx-io = "0.5.4"
+coroutines = "1.9.0"
 atomicfu = "0.25.0"
-serialization = "1.7.2"
+serialization = "1.7.3"
 ktlint = "3.15.0"
-kotlinx-browser = "0.1"
+kotlinx-browser = "0.2"
 
-netty = "4.1.113.Final"
+netty = "4.1.114.Final"
 netty-tcnative = "2.0.66.Final"
 
 jetty = "9.4.56.v20240826"
@@ -18,30 +18,30 @@ jetty-alpn-api = "1.1.3.v20160715"
 jetty-alpn-boot = "8.1.13.v20181017"
 jetty-alpn-openjdk8 = "9.4.56.v20240826"
 
-tomcat = "9.0.93"
-tomcat-jakarta = "10.1.28"
+tomcat = "9.0.96"
+tomcat-jakarta = "10.1.30"
 
 apache = "4.1.5"
 apache5 = "5.3.1"
 apacheds = "2.0.0.AM27"
 okhttp = "4.12.0"
-okio = "3.9.0"
+okio = "3.9.1"
 
 json-simple = "1.1.1"
 gson = "2.11.0"
-jackson = "2.17.2"
+jackson = "2.18.0"
 
-junit = "5.11.0"
+junit = "5.11.2"
 slf4j = "2.0.16"
-logback = "1.3.5"
+logback = "1.5.8"
 
-dropwizard = "4.2.27"
-micrometer = "1.13.3"
+dropwizard = "4.2.28"
+micrometer = "1.13.5"
 
 jansi = "2.4.1"
 typesafe = "1.4.3"
 
-mockk = "1.13.12"
+mockk = "1.13.13"
 
 java-jwt = "4.4.0"
 
@@ -49,7 +49,7 @@ jwks-rsa = "0.22.1"
 mustache = "0.9.14"
 freemarker = "2.3.33"
 pebble = "3.2.2"
-velocity = "2.3"
+velocity = "2.4"
 velocity-tools = "3.1"
 webjars-locator = "0.59"
 webjars-jquery = "3.7.1"
@@ -76,6 +76,7 @@ kotlin-stdlib-jdk7 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", versi
 kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
 
 kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 
@@ -87,6 +88,7 @@ kotlinx-coroutines-slf4j = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-
 
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+kotlinx-serialization-json-io = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-io", version.ref = "serialization" }
 kotlinx-serialization-cbor = { module = "org.jetbrains.kotlinx:kotlinx-serialization-cbor", version.ref = "serialization" }
 kotlinx-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "serialization" }
 
@@ -95,6 +97,8 @@ kotlinx-html = { module = "org.jetbrains.kotlinx:kotlinx-html", version.ref = "k
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
+
+kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinx-browser" }
 
 netty-handler = { module = "io.netty:netty-handler", version.ref = "netty" }
 netty-codec-http2 = { module = "io.netty:netty-codec-http2", version.ref = "netty" }

@@ -1,5 +1,5 @@
 // Klib ABI Dump
-// Targets: [iosArm64, iosSimulatorArm64, iosX64, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
+// Targets: [androidNativeArm32, androidNativeArm64, androidNativeX64, androidNativeX86, iosArm64, iosSimulatorArm64, iosX64, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
 // Rendering settings:
 // - Signature version: 2
 // - Show manifest properties: true
@@ -44,6 +44,8 @@ final class io.ktor.server.cio/CIOApplicationEngine : io.ktor.server.engine/Base
 
     final fun start(kotlin/Boolean): io.ktor.server.engine/ApplicationEngine // io.ktor.server.cio/CIOApplicationEngine.start|start(kotlin.Boolean){}[0]
     final fun stop(kotlin/Long, kotlin/Long) // io.ktor.server.cio/CIOApplicationEngine.stop|stop(kotlin.Long;kotlin.Long){}[0]
+    final suspend fun startSuspend(kotlin/Boolean): io.ktor.server.engine/ApplicationEngine // io.ktor.server.cio/CIOApplicationEngine.startSuspend|startSuspend(kotlin.Boolean){}[0]
+    final suspend fun stopSuspend(kotlin/Long, kotlin/Long) // io.ktor.server.cio/CIOApplicationEngine.stopSuspend|stopSuspend(kotlin.Long;kotlin.Long){}[0]
 
     final class Configuration : io.ktor.server.engine/BaseApplicationEngine.Configuration { // io.ktor.server.cio/CIOApplicationEngine.Configuration|null[0]
         constructor <init>() // io.ktor.server.cio/CIOApplicationEngine.Configuration.<init>|<init>(){}[0]

@@ -3,7 +3,6 @@
  */
 
 import org.gradle.api.Project
-import org.gradle.internal.extensions.stdlib.*
 import org.jetbrains.dokka.gradle.*
 import org.jetbrains.kotlin.gradle.dsl.*
 import org.jetbrains.kotlin.gradle.tasks.*
@@ -73,28 +72,15 @@ val configuredVersion: String by extra
 apply(from = "gradle/verifier.gradle")
 
 extra["skipPublish"] = mutableListOf(
-    "ktor-server-test-base",
     "ktor-server-test-suites",
     "ktor-server-tests",
     "ktor-junit",
 )
 
+// Point old artifact to new location
 extra["relocatedArtifacts"] = mapOf(
-    "ktor-auth" to "ktor-server-auth",
-    "ktor-auth-jwt" to "ktor-server-auth-jwt",
-    "ktor-auth-ldap" to "ktor-server-auth-ldap",
-    "ktor-freemarker" to "ktor-server-freemarker",
-    "ktor-metrics" to "ktor-server-metrics",
-    "ktor-metrics-micrometer" to "ktor-server-metrics-micrometer",
-    "ktor-mustache" to "ktor-server-mustache",
-    "ktor-pebble" to "ktor-server-pebble",
-    "ktor-thymeleaf" to "ktor-server-thymeleaf",
-    "ktor-velocity" to "ktor-server-velocity",
-    "ktor-webjars" to "ktor-server-webjars",
-    "ktor-gson" to "ktor-serialization-gson",
-    "ktor-jackson" to "ktor-serialization-jackson",
     "ktor-server-test-base" to "ktor-server-test-host",
-).invert()
+)
 
 extra["nonDefaultProjectStructure"] = mutableListOf(
     "ktor-bom",
@@ -115,28 +101,21 @@ apply(from = "gradle/compatibility.gradle")
 plugins {
     id("org.jetbrains.dokka") version "1.9.20" apply false
     id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.16.3"
-    id("org.jetbrains.kotlinx.atomicfu") version "0.25.0" apply false
 }
 
-allprojects {
+
+subprojects {
     group = "io.ktor"
     version = configuredVersion
     extra["hostManager"] = HostManager()
 
     setupTrainForSubproject()
 
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        maven(url = "https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven")
-        maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlinx/dev")
-    }
-
     val nonDefaultProjectStructure: List<String> by rootProject.extra
-    if (nonDefaultProjectStructure.contains(project.name)) return@allprojects
+    if (nonDefaultProjectStructure.contains(project.name)) return@subprojects
 
     apply(plugin = "kotlin-multiplatform")
-    apply(plugin = "org.jetbrains.kotlinx.atomicfu")
+    apply(plugin = "atomicfu-conventions")
 
     configureTargets()
 
@@ -155,9 +134,7 @@ allprojects {
     if (!skipPublish.contains(project.name)) {
         configurePublication()
     }
-}
 
-subprojects {
     configureCodestyle()
 }
 
@@ -176,7 +153,7 @@ fun configureDokka() {
 
     val dokkaOutputDir = "../versions"
 
-    tasks.withType<DokkaMultiModuleTask> {
+    tasks.withType<DokkaMultiModuleTask>().configureEach {
         val id = "org.jetbrains.dokka.versioning.VersioningPlugin"
         val config = """{ "version": "$configuredVersion", "olderVersionsDir":"$dokkaOutputDir" }"""
         val mapOf = mapOf(id to config)

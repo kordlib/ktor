@@ -10,7 +10,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
 import kotlin.test.*
 
-@OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class)
+@OptIn(DelicateCoroutinesApi::class)
 class MultipartTest {
     @Test
     fun smokeTest() = runBlocking {
@@ -208,7 +208,6 @@ class MultipartTest {
 
         assertEquals("Hello", title.body.readRemaining().readText())
         val fileContent = file.body.readRemaining().readText()
-//        println(fileContent)
         assertEquals(380, fileContent.length)
     }
 
@@ -409,7 +408,8 @@ class MultipartTest {
             val events = parseMultipart(
                 input,
                 "multipart/form-data; boundary=boundary",
-                body.length.toLong()
+                body.length.toLong(),
+                Long.MAX_VALUE
             ).toList()
 
             assertEquals(1, events.size)

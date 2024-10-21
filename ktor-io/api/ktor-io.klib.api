@@ -1,6 +1,6 @@
 // Klib ABI Dump
-// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
-// Alias: native => [iosArm64, iosSimulatorArm64, iosX64, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
+// Targets: [androidNativeArm32, androidNativeArm64, androidNativeX64, androidNativeX86, iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
+// Alias: native => [androidNativeArm32, androidNativeArm64, androidNativeX64, androidNativeX86, iosArm64, iosSimulatorArm64, iosX64, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
 // Alias: apple => [iosArm64, iosSimulatorArm64, iosX64, macosArm64, macosX64, tvosArm64, tvosSimulatorArm64, tvosX64, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
 // Alias: linux => [linuxArm64, linuxX64]
 // Rendering settings:
@@ -225,7 +225,7 @@ final class io.ktor.utils.io/CountedByteReadChannel : io.ktor.utils.io/ByteReadC
     final val isClosedForRead // io.ktor.utils.io/CountedByteReadChannel.isClosedForRead|{}isClosedForRead[0]
         final fun <get-isClosedForRead>(): kotlin/Boolean // io.ktor.utils.io/CountedByteReadChannel.isClosedForRead.<get-isClosedForRead>|<get-isClosedForRead>(){}[0]
     final val readBuffer // io.ktor.utils.io/CountedByteReadChannel.readBuffer|{}readBuffer[0]
-        final fun <get-readBuffer>(): kotlinx.io/Source // io.ktor.utils.io/CountedByteReadChannel.readBuffer.<get-readBuffer>|<get-readBuffer>(){}[0]
+        final fun <get-readBuffer>(): kotlinx.io/Buffer // io.ktor.utils.io/CountedByteReadChannel.readBuffer.<get-readBuffer>|<get-readBuffer>(){}[0]
     final val totalBytesRead // io.ktor.utils.io/CountedByteReadChannel.totalBytesRead|{}totalBytesRead[0]
         final fun <get-totalBytesRead>(): kotlin/Long // io.ktor.utils.io/CountedByteReadChannel.totalBytesRead.<get-totalBytesRead>|<get-totalBytesRead>(){}[0]
 
@@ -422,20 +422,23 @@ final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/copyTo(io.
 final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/discard(kotlin/Long = ...): kotlin/Long // io.ktor.utils.io/discard|discard@io.ktor.utils.io.ByteReadChannel(kotlin.Long){}[0]
 final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/discardExact(kotlin/Long) // io.ktor.utils.io/discardExact|discardExact@io.ktor.utils.io.ByteReadChannel(kotlin.Long){}[0]
 final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/exhausted(): kotlin/Boolean // io.ktor.utils.io/exhausted|exhausted@io.ktor.utils.io.ByteReadChannel(){}[0]
+final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/peek(kotlin/Int): kotlinx.io.bytestring/ByteString? // io.ktor.utils.io/peek|peek@io.ktor.utils.io.ByteReadChannel(kotlin.Int){}[0]
 final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/readAvailable(kotlin/ByteArray, kotlin/Int = ..., kotlin/Int = ...): kotlin/Int // io.ktor.utils.io/readAvailable|readAvailable@io.ktor.utils.io.ByteReadChannel(kotlin.ByteArray;kotlin.Int;kotlin.Int){}[0]
 final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/readBuffer(): kotlinx.io/Buffer // io.ktor.utils.io/readBuffer|readBuffer@io.ktor.utils.io.ByteReadChannel(){}[0]
 final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/readBuffer(kotlin/Int): kotlinx.io/Buffer // io.ktor.utils.io/readBuffer|readBuffer@io.ktor.utils.io.ByteReadChannel(kotlin.Int){}[0]
 final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/readByte(): kotlin/Byte // io.ktor.utils.io/readByte|readByte@io.ktor.utils.io.ByteReadChannel(){}[0]
 final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/readByteArray(kotlin/Int): kotlin/ByteArray // io.ktor.utils.io/readByteArray|readByteArray@io.ktor.utils.io.ByteReadChannel(kotlin.Int){}[0]
-final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/readFully(kotlin/ByteArray) // io.ktor.utils.io/readFully|readFully@io.ktor.utils.io.ByteReadChannel(kotlin.ByteArray){}[0]
+final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/readFully(kotlin/ByteArray, kotlin/Int = ..., kotlin/Int = ...) // io.ktor.utils.io/readFully|readFully@io.ktor.utils.io.ByteReadChannel(kotlin.ByteArray;kotlin.Int;kotlin.Int){}[0]
 final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/readInt(): kotlin/Int // io.ktor.utils.io/readInt|readInt@io.ktor.utils.io.ByteReadChannel(){}[0]
 final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/readLong(): kotlin/Long // io.ktor.utils.io/readLong|readLong@io.ktor.utils.io.ByteReadChannel(){}[0]
 final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/readPacket(kotlin/Int): kotlinx.io/Source // io.ktor.utils.io/readPacket|readPacket@io.ktor.utils.io.ByteReadChannel(kotlin.Int){}[0]
 final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/readRemaining(): kotlinx.io/Source // io.ktor.utils.io/readRemaining|readRemaining@io.ktor.utils.io.ByteReadChannel(){}[0]
 final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/readRemaining(kotlin/Long): kotlinx.io/Source // io.ktor.utils.io/readRemaining|readRemaining@io.ktor.utils.io.ByteReadChannel(kotlin.Long){}[0]
 final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/readShort(): kotlin/Short // io.ktor.utils.io/readShort|readShort@io.ktor.utils.io.ByteReadChannel(){}[0]
-final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/readUTF8Line(): kotlin/String? // io.ktor.utils.io/readUTF8Line|readUTF8Line@io.ktor.utils.io.ByteReadChannel(){}[0]
+final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/readUTF8Line(kotlin/Int = ...): kotlin/String? // io.ktor.utils.io/readUTF8Line|readUTF8Line@io.ktor.utils.io.ByteReadChannel(kotlin.Int){}[0]
 final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/readUTF8LineTo(kotlin.text/Appendable, kotlin/Int = ...): kotlin/Boolean // io.ktor.utils.io/readUTF8LineTo|readUTF8LineTo@io.ktor.utils.io.ByteReadChannel(kotlin.text.Appendable;kotlin.Int){}[0]
+final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/readUntil(kotlinx.io.bytestring/ByteString, io.ktor.utils.io/ByteWriteChannel, kotlin/Long = ..., kotlin/Boolean = ...): kotlin/Long // io.ktor.utils.io/readUntil|readUntil@io.ktor.utils.io.ByteReadChannel(kotlinx.io.bytestring.ByteString;io.ktor.utils.io.ByteWriteChannel;kotlin.Long;kotlin.Boolean){}[0]
+final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/skipIfFound(kotlinx.io.bytestring/ByteString): kotlin/Boolean // io.ktor.utils.io/skipIfFound|skipIfFound@io.ktor.utils.io.ByteReadChannel(kotlinx.io.bytestring.ByteString){}[0]
 final suspend fun (io.ktor.utils.io/ByteReadChannel).io.ktor.utils.io/toByteArray(): kotlin/ByteArray // io.ktor.utils.io/toByteArray|toByteArray@io.ktor.utils.io.ByteReadChannel(){}[0]
 final suspend fun (io.ktor.utils.io/ByteWriteChannel).io.ktor.utils.io/awaitFreeSpace() // io.ktor.utils.io/awaitFreeSpace|awaitFreeSpace@io.ktor.utils.io.ByteWriteChannel(){}[0]
 final suspend fun (io.ktor.utils.io/ByteWriteChannel).io.ktor.utils.io/flushIfNeeded() // io.ktor.utils.io/flushIfNeeded|flushIfNeeded@io.ktor.utils.io.ByteWriteChannel(){}[0]
@@ -489,6 +492,12 @@ open class io.ktor.utils.io.locks/SynchronizedObject { // io.ktor.utils.io.locks
 
             // Targets: [linux, mingwX64]
             final fun <get-ownerThreadId>(): kotlin/ULong? // io.ktor.utils.io.locks/SynchronizedObject.LockState.ownerThreadId.<get-ownerThreadId>|<get-ownerThreadId>(){}[0]
+
+            // Targets: [androidNativeArm32, androidNativeX86]
+            final fun <get-ownerThreadId>(): kotlin/Int? // io.ktor.utils.io.locks/SynchronizedObject.LockState.ownerThreadId.<get-ownerThreadId>|<get-ownerThreadId>(){}[0]
+
+            // Targets: [androidNativeArm64, androidNativeX64]
+            final fun <get-ownerThreadId>(): kotlin/Long? // io.ktor.utils.io.locks/SynchronizedObject.LockState.ownerThreadId.<get-ownerThreadId>|<get-ownerThreadId>(){}[0]
         final val status // io.ktor.utils.io.locks/SynchronizedObject.LockState.status|{}status[0]
             final fun <get-status>(): io.ktor.utils.io.locks/SynchronizedObject.Status // io.ktor.utils.io.locks/SynchronizedObject.LockState.status.<get-status>|<get-status>(){}[0]
         final val waiters // io.ktor.utils.io.locks/SynchronizedObject.LockState.waiters|{}waiters[0]
@@ -499,6 +508,12 @@ open class io.ktor.utils.io.locks/SynchronizedObject { // io.ktor.utils.io.locks
 
         // Targets: [linux, mingwX64]
         constructor <init>(io.ktor.utils.io.locks/SynchronizedObject.Status, kotlin/Int, kotlin/Int, kotlin/ULong? = ..., kotlinx.cinterop/CPointer<io.ktor.io.interop.mutex/mutex_node>? = ...) // io.ktor.utils.io.locks/SynchronizedObject.LockState.<init>|<init>(io.ktor.utils.io.locks.SynchronizedObject.Status;kotlin.Int;kotlin.Int;kotlin.ULong?;kotlinx.cinterop.CPointer<io.ktor.io.interop.mutex.mutex_node>?){}[0]
+
+        // Targets: [androidNativeArm32, androidNativeX86]
+        constructor <init>(io.ktor.utils.io.locks/SynchronizedObject.Status, kotlin/Int, kotlin/Int, kotlin/Int? = ..., kotlinx.cinterop/CPointer<io.ktor.io.interop.mutex/mutex_node>? = ...) // io.ktor.utils.io.locks/SynchronizedObject.LockState.<init>|<init>(io.ktor.utils.io.locks.SynchronizedObject.Status;kotlin.Int;kotlin.Int;kotlin.Int?;kotlinx.cinterop.CPointer<io.ktor.io.interop.mutex.mutex_node>?){}[0]
+
+        // Targets: [androidNativeArm64, androidNativeX64]
+        constructor <init>(io.ktor.utils.io.locks/SynchronizedObject.Status, kotlin/Int, kotlin/Int, kotlin/Long? = ..., kotlinx.cinterop/CPointer<io.ktor.io.interop.mutex/mutex_node>? = ...) // io.ktor.utils.io.locks/SynchronizedObject.LockState.<init>|<init>(io.ktor.utils.io.locks.SynchronizedObject.Status;kotlin.Int;kotlin.Int;kotlin.Long?;kotlinx.cinterop.CPointer<io.ktor.io.interop.mutex.mutex_node>?){}[0]
     }
 }
 

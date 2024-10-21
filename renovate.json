@@ -5,6 +5,7 @@
     ":semanticCommitsDisabled",
     ":label(dependencies)"
   ],
+  "rebaseWhen": "conflicted",
   "packageRules": [
     {
       "description": "Allow EAPs for Ktor dependencies and use custom versioning to detect a build number",
@@ -20,16 +21,6 @@
       "description": "False positive dependency findings.",
       "matchDepNames": [
         "macosX64:linuxX64"
-      ],
-      "enabled": false
-    },
-    {
-      "description": "Do not update kotlinx.serialization plugin in buildSrc, as it should be updated manually.",
-      "matchDepNames": [
-        "org.jetbrains.kotlin.plugin.serialization"
-      ],
-      "matchFileNames": [
-        "buildSrc/build.gradle.kts"
       ],
       "enabled": false
     },
@@ -52,6 +43,13 @@
       "matchCurrentVersion": "[,10.0.0)",
       "matchUpdateTypes": [
         "major"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Do not update Develocity as server may not support a newer version",
+      "matchPackageNames": [
+        "com.gradle:develocity-gradle-plugin*"
       ],
       "enabled": false
     }

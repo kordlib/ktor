@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2021 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2014-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 import org.gradle.api.*
@@ -49,13 +49,23 @@ fun isAvailableForPublication(publication: Publication): Boolean {
 
     result = result || (HOST_NAME == "macos" && name in macPublications)
 
+    // can be published from any host
+    val androidNativePublication = setOf(
+        "androidNativeArm32",
+        "androidNativeArm64",
+        "androidNativeX64",
+        "androidNativeX86"
+    )
+
+    result = result || name in androidNativePublication
+
     return result
 }
 
 fun Project.configurePublication() {
     apply(plugin = "maven-publish")
 
-    tasks.withType<AbstractPublishToMaven>().all {
+    tasks.withType<AbstractPublishToMaven>().configureEach {
         onlyIf { isAvailableForPublication(publication) }
     }
 
@@ -76,7 +86,7 @@ fun Project.configurePublication() {
     val relocatedArtifacts: Map<String, String> by rootProject.extra
 
     val emptyJar = tasks.register<Jar>("emptyJar") {
-        archiveAppendix.set("empty")
+        archiveAppendix = "empty"
     }
 
     the<PublishingExtension>().apply {
@@ -100,6 +110,7 @@ fun Project.configurePublication() {
 
         publications.forEach {
             val publication = it as? MavenPublication ?: return@forEach
+
             publication.pom {
                 name = project.name
                 description = project.description?.takeIf { it.isNotEmpty() } ?: "Ktor is a framework for quickly creating web applications in Kotlin with minimal effort."
@@ -122,10 +133,10 @@ fun Project.configurePublication() {
                 scm {
                     url = "https://github.com/ktorio/ktor.git"
                 }
-                relocatedArtifacts[project.name]?.let { oldArtifactId ->
+                relocatedArtifacts[project.name]?.let { newArtifactId ->
                     distributionManagement {
                         relocation {
-                            artifactId = oldArtifactId
+                            artifactId = newArtifactId
                         }
                     }
                 }
@@ -156,8 +167,9 @@ fun Project.configurePublication() {
         }
     }
 
-    val publishToMavenLocal = tasks.getByName("publishToMavenLocal")
-    tasks.getByName("publish").dependsOn(publishToMavenLocal)
+    tasks.named("publish") {
+        dependsOn(tasks.named("publishToMavenLocal"))
+    }
 
     val signingKey = System.getenv("SIGN_KEY_ID")
     val signingKeyPassphrase = System.getenv("SIGN_KEY_PASSPHRASE")
@@ -187,16 +199,17 @@ fun Project.configurePublication() {
         }
     }
 
-    val publishLinuxX64PublicationToMavenRepository = tasks.findByName("publishLinuxX64PublicationToMavenRepository")
-    val signLinuxArm64Publication = tasks.findByName("signLinuxArm64Publication")
-    if (publishLinuxX64PublicationToMavenRepository != null && signLinuxArm64Publication != null) {
-        publishLinuxX64PublicationToMavenRepository.dependsOn(signLinuxArm64Publication)
+    val signLinuxArm64Publication = tasks.maybeNamed("signLinuxArm64Publication")
+    if (signLinuxArm64Publication != null) {
+        tasks.maybeNamed("publishLinuxX64PublicationToMavenRepository") {
+            dependsOn(signLinuxArm64Publication)
+        }
     }
 
-    val publishLinuxArm64PublicationToMavenRepository =
-        tasks.findByName("publishLinuxArm64PublicationToMavenRepository")
-    val signLinuxX64Publication = tasks.findByName("signLinuxX64Publication")
-    if (publishLinuxArm64PublicationToMavenRepository != null && signLinuxX64Publication != null) {
-        publishLinuxArm64PublicationToMavenRepository.dependsOn(signLinuxX64Publication)
+    val signLinuxX64Publication = tasks.maybeNamed("signLinuxX64Publication")
+    if (signLinuxX64Publication != null) {
+        tasks.maybeNamed("publishLinuxArm64PublicationToMavenRepository") {
+            dependsOn(signLinuxX64Publication)
+        }
     }
 }

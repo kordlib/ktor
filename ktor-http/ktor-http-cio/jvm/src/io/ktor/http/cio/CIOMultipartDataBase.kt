@@ -7,7 +7,6 @@ package io.ktor.http.cio
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.utils.io.*
-import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
 import kotlin.coroutines.*
@@ -21,15 +20,24 @@ public class CIOMultipartDataBase(
     channel: ByteReadChannel,
     contentType: CharSequence,
     contentLength: Long?,
-    private val formFieldLimit: Long = 65536,
+    formFieldLimit: Long = 65536,
 ) : MultiPartData, CoroutineScope {
+    // keep a reference to the previous part, so that we can
+    // close the body if the next is retrieved without reading
+    private var previousPart: PartData? = null
+
     private val events: ReceiveChannel<MultipartEvent> =
         parseMultipart(channel, contentType, contentLength, formFieldLimit)
 
     override suspend fun readPart(): PartData? {
+        previousPart?.dispose?.invoke()
+
         while (true) {
             val event = events.tryReceive().getOrNull() ?: break
-            eventToData(event)?.let { return it }
+            eventToData(event)?.let {
+                previousPart = it
+                return it
+            }
         }
 
         return readPartSuspend()
