@@ -69,7 +69,7 @@ internal fun onBodyChunkRequested(
         return if (body.closedCause != null) -1 else 0
     }
     val readCount = try {
-        body.readAvailable(1) { source: Buffer ->
+        body.readAvailable(1) { source ->
             source.readAvailable(buffer, 0, requested)
         }
     } catch (cause: Throwable) {
