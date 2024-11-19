@@ -1,6 +1,6 @@
 /*
-* Copyright 2014-2021 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
-*/
+ * Copyright 2014-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
 
 package io.ktor.tests.http.cio
 
@@ -8,6 +8,8 @@ import io.ktor.http.cio.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
+import kotlinx.coroutines.test.*
+import kotlinx.io.*
 import kotlin.test.*
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -335,6 +337,17 @@ class MultipartTest {
         }
     }
 
+    @Test
+    fun testParseContentType() = runTest {
+        fun testContentType(contentType: String) {
+            parseMultipart(ByteReadChannel.Empty, "$contentType; boundary=A", 0L)
+        }
+
+        testContentType("multipart/mixed")
+        testContentType("Multipart/mixed")
+        assertFailsWith<IOException> { testContentType("multi-part/mixed") }
+    }
+
     @OptIn(DelicateCoroutinesApi::class)
     @Test
     fun testEmptyPayload() = runBlocking {
@@ -419,11 +432,7 @@ class MultipartTest {
 
     private fun testBoundary(expectedBoundary: String, headerValue: String) {
         val boundary = parseBoundaryInternal(headerValue)
-        val actualBoundary = String(
-            boundary.array(),
-            boundary.arrayOffset() + boundary.position(),
-            boundary.remaining()
-        )
+        val actualBoundary = String(boundary)
 
         assertEquals(expectedBoundary, actualBoundary)
     }

@@ -2,10 +2,13 @@
  * Copyright 2014-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+@file:OptIn(InternalAPI::class)
+
 package io.ktor.http
 
 import io.ktor.util.*
 import io.ktor.util.date.*
+import io.ktor.utils.io.*
 import kotlinx.serialization.*
 import kotlin.jvm.*
 
@@ -37,7 +40,17 @@ public data class Cookie(
     val secure: Boolean = false,
     val httpOnly: Boolean = false,
     val extensions: Map<String, String?> = emptyMap()
-)
+) : JvmSerializable {
+    private fun writeReplace(): Any = JvmSerializerReplacement(CookieJvmSerializer, this)
+}
+
+internal object CookieJvmSerializer : JvmSerializer<Cookie> {
+    override fun jvmSerialize(value: Cookie): ByteArray =
+        renderSetCookieHeader(value).encodeToByteArray()
+
+    override fun jvmDeserialize(value: ByteArray): Cookie =
+        parseServerSetCookieHeader(value.decodeToString())
+}
 
 /**
  * Cooke encoding strategy
@@ -168,14 +181,7 @@ public fun renderSetCookieHeader(
  * Encode cookie value using the specified [encoding]
  */
 public fun encodeCookieValue(value: String, encoding: CookieEncoding): String = when (encoding) {
-    CookieEncoding.RAW -> when {
-        value.any { it.shouldEscapeInCookies() } ->
-            throw IllegalArgumentException(
-                "The cookie value contains characters that cannot be encoded in RAW format. " +
-                    " Consider URL_ENCODING mode"
-            )
-        else -> value
-    }
+    CookieEncoding.RAW -> value
     CookieEncoding.DQUOTES -> when {
         value.contains('"') -> throw IllegalArgumentException(
             "The cookie value contains characters that cannot be encoded in DQUOTES format. " +
